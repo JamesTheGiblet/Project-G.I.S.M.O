@@ -1,5 +1,5 @@
 # display.py
-
+ 
 import time
 import board
 import busio
