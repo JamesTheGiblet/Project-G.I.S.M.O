@@ -10,5 +10,6 @@
         "OLED",
         "Runge",
         "smbus"
-    ]
+    ],
+    "wolf.disableHotModeWarning": true
 }
