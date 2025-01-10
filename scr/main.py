@@ -1,5 +1,5 @@
-# main.py (Version 0.68: Stuck Detection, Obstacle Memory, Refined Wandering)
- 
+# main.py (Version 0.70: Separated Stuck Detection into stuck_detection.py)
+
 import time
 import robot as rc
 import movement as m
@@ -13,12 +13,16 @@ import dead_reckoning as dr
 import random
 import sys
 import select
+import stuck_detection as sd
 
 # --- Code Functions ---
 # This program controls a robot named Gismo.
-# Version 0.68 adds stuck detection, basic obstacle memory, and refines the wandering behavior.
-# The robot moves forward continuously, avoiding obstacles and edges.
-# It reacts to touch and sound, provides dead reckoning information, and uses the MPU6050 IMU.
+# Version 0.70 separates stuck detection and recovery logic into a dedicated module.
+# The robot can move forward, backward, turn left, and turn right, with a ramp-up/ramp-down
+# feature for smoother movements. It uses the PCA9685 PWM driver to control the L298N motor driver,
+# the HC-SR04 sensor to measure distance to obstacles, and edge sensors to detect edges.
+# The robot also uses an RGB LED for visual feedback, a buzzer for audio feedback,
+# and implements dead reckoning for position and heading estimation using the MPU6050 library.
 
 # --- Helper Functions ---
 
@@ -131,32 +135,14 @@ if __name__ == "__main__":
                     print(f"Position (X, Y): ({position[0]:.2f}, {position[1]:.2f}), Heading: {heading:.2f} degrees")
                     last_update = current_time
 
-                # --- Stuck Detection ---
-                if movement.are_motors_commanded_to_move() and time.time() - time_last_moved > c.MOVEMENT_SETTINGS["STUCK_TIME"]:
-                    position = dead_reckoning.get_position()
-                    distance_moved = ((position[0] - last_position[0])**2 + (position[1] - last_position[1])**2)**0.5
-                    if distance_moved < c.MOVEMENT_SETTINGS["STUCK_DISTANCE"]:
-                        print("Stuck detected!")
-                        stuck_count += 1
-                        if stuck_count >= c.MOVEMENT_SETTINGS["STUCK_THRESHOLD"]:
-                            print("Stuck multiple times - signaling failure!")
-                            rgb_led_instance.set_emotion("sad")
-                            b.buzzer.play_tone(150, 1)
-                            stuck_count = 0
-                        else:
-                            # --- Stuck Recovery Maneuver ---
-                            movement.stop_all_motors()
-                            rgb_led_instance.set_emotion("confused")
-                            b.buzzer.play_tone(200, 0.2)
-                            movement.move_backward(speed=c.MOVEMENT_SETTINGS["FORWARD_SPEED"], duration=1.0)
-                            if random.choice([True, False]):
-                                movement.turn_left_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"] * 2)
-                            else:
-                                movement.turn_right_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"] * 2)
-                            time_last_moved = time.time()
-                    else:
-                        stuck_count = 0  # Reset counter if robot moved significantly
-                    last_position = position
+                # Handle stuck situation using the separate module
+                sd.handle_stuck_situation(rc.pca, rgb_led_instance, movement, dead_reckoning)
+                if stuck_count >= c.MOVEMENT_SETTINGS["STUCK_THRESHOLD"]:
+                    wandering = False  # Exit wandering mode if stuck for too long
+                    movement.stop_all_motors()
+                    rgb_led_instance.set_emotion("neutral")
+                    print("Robot got stuck. Entering command mode.")
+                    continue
 
                 # Check for sound
                 if sound_detected:
