@@ -1,7 +1,7 @@
 # rgb_led.py
 
 import time
-from config import config as c
+import config as c
 
 class RGBLed:
     """

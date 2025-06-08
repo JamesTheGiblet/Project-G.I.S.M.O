@@ -1,0 +1,10 @@
+Power: Red (+5V/3.3V) and Black (GND) to PCA9685 and all components.
+I2C: Yellow (SDA) and Blue (SCL)
+Tilt Sensor: Green (signal)
+LEDs: Green (signal)
+Button: Green (signal)
+Grove Ultrasonic: Green (signal)
+Servos: Orange (signal)
+Buzzer and Sound Sensor: White (signal)
+Touch Sensor: Purple (signal)
+IR Receiver, Reverse Sensor, Edge Sensors: Gray (signal)

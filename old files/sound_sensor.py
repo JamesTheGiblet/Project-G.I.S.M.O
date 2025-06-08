@@ -1,7 +1,7 @@
 # sound_sensor.py
 
 import RPi.GPIO as GPIO
-from config import config as c
+import config as c
 
 """
 sound_sensor.py

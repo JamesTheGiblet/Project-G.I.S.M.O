@@ -1,12 +1,45 @@
 # display.py
-
+ 
 import time
-import board # type: ignore
-import busio # type: ignore
-from PIL import Image, ImageDraw, ImageFont # type: ignore
-import adafruit_ssd1306 # type: ignore
+import board
+import busio
+from PIL import Image, ImageDraw, ImageFont
+import adafruit_ssd1306
 import random
-from config import config as c
+import config as c
+
+"""
+display.py
+
+This module provides functions to control an SSD1306 OLED display for the Gismo robot. 
+It includes functionalities to draw various faces representing different emotional states 
+and to display text on the screen. The module is designed to be used with a Raspberry Pi 
+and requires the adafruit_ssd1306 library for OLED display control, along with PIL (Pillow) 
+for image and text rendering.
+
+Functions:
+    - initialize_display(): Initializes the OLED display.
+    - clear_display(): Clears the OLED display.
+    - draw_eyes(x_offset_left, y_offset_left, x_offset_right, y_offset_right, blink): Draws a pair of eyes on the display.
+    - look_around(): Simulates the eyes looking around randomly.
+    - blink(): Simulates a blinking action of the eyes.
+    - test_display(): Runs a test sequence displaying various eye movements and blinking.
+    - draw_face_neutral(): Draws a neutral face on the display.
+    - draw_face_happy(): Draws a happy face on the display.
+    - draw_face_sad(): Draws a sad face on the display.
+    - draw_face_angry(): Draws an angry face on the display.
+    - draw_face_surprised(): Draws a surprised face on the display.
+    - draw_face_searching(): Draws a searching face on the display.
+    - draw_text(text): Displays text on the OLED display.
+
+Dependencies:
+    - board: Provides board-specific pin definitions.
+    - busio: Provides I2C communication support.
+    - PIL (Pillow): Used for image and text drawing.
+    - adafruit_ssd1306: Library for SSD1306 OLED display control.
+    - random: Used for generating random eye movements.
+    - config: Configuration settings for the display and other parameters.
+"""
 
 # --- Eye Parameters (adjust as you like) ---
 EYE_RADIUS = 10
@@ -69,22 +102,22 @@ def draw_eyes(x_offset_left=0, y_offset_left=0, x_offset_right=0, y_offset_right
     else:
         # Draw open eyes (circles)
         draw.ellipse((left_eye_center[0] - EYE_RADIUS, left_eye_center[1] - EYE_RADIUS,
-                    left_eye_center[0] + EYE_RADIUS, left_eye_center[1] + EYE_RADIUS),
-                    outline=255, fill=0)
+                      left_eye_center[0] + EYE_RADIUS, left_eye_center[1] + EYE_RADIUS),
+                     outline=255, fill=0)
         draw.ellipse((right_eye_center[0] - EYE_RADIUS, right_eye_center[1] - EYE_RADIUS,
-                    right_eye_center[0] + EYE_RADIUS, right_eye_center[1] + EYE_RADIUS),
-                    outline=255, fill=0)
+                      right_eye_center[0] + EYE_RADIUS, right_eye_center[1] + EYE_RADIUS),
+                     outline=255, fill=0)
 
         # Draw irises
         left_iris_center = (left_eye_center[0] + x_offset_left, left_eye_center[1] + y_offset_left)
         right_iris_center = (right_eye_center[0] + x_offset_right, right_eye_center[1] + y_offset_right)
 
         draw.ellipse((left_iris_center[0] - IRIS_RADIUS, left_iris_center[1] - IRIS_RADIUS,
-                    left_iris_center[0] + IRIS_RADIUS, left_iris_center[1] + IRIS_RADIUS),
-                    outline=255, fill=255)
+                      left_iris_center[0] + IRIS_RADIUS, left_iris_center[1] + IRIS_RADIUS),
+                     outline=255, fill=255)
         draw.ellipse((right_iris_center[0] - IRIS_RADIUS, right_iris_center[1] - IRIS_RADIUS,
-                    right_iris_center[0] + IRIS_RADIUS, right_iris_center[1] + IRIS_RADIUS),
-                    outline=255, fill=255)
+                      right_iris_center[0] + IRIS_RADIUS, right_iris_center[1] + IRIS_RADIUS),
+                     outline=255, fill=255)
 
     # Display the image
     display.image(image)
@@ -270,4 +303,10 @@ def draw_text(text):
 
         # Display the image
         display.image(image)
+        display.show()
+
+def clear_display():
+    """Clears the OLED display."""
+    if display:
+        display.fill(0)
         display.show()

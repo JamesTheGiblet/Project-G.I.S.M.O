@@ -6,10 +6,14 @@
         "busio",
         "circuitpython",
         "deinit",
+        "dejavu",
+        "intergration",
         "Kutta",
         "OLED",
         "Runge",
-        "smbus"
+        "smbus",
+        "trapesoidal",
+        "XSHUT"
     ],
     "wolf.disableHotModeWarning": true
 }

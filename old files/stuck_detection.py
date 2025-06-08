@@ -1,9 +1,9 @@
 # stuck_detection.py
 
 import time
-from config import config as c
+import config as c
 import random
-from scr import buzzer as b
+import buzzer as b
 
 # --- Global Variables for Stuck Detection ---
 stuck_count = 0         # Initialize the stuck counter

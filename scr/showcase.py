@@ -2,14 +2,14 @@
 
 import time
 import robot as rc
-import movement as m
-import config as c
+from scr import movement as m
+from config import config as c
 import rgb_led as led
-import buzzer as b
+from scr import buzzer as b
 import touch_sensor as t
 import sound_sensor as s
-import servo_control as sc
-import dead_reckoning as dr
+from scr import servo_control as sc
+from scr import dead_reckoning as dr
 import random
 import sys
 import select

@@ -1,5 +1,5 @@
 # mapping.py
-
+ 
 import numpy as np
 import config as c
 import math
@@ -9,9 +9,9 @@ class OccupancyGridMap:
     Represents an occupancy grid map for the robot's environment.
 
     The map is stored as a 2D NumPy array (grid) where each cell holds a probability value:
-        0.0: Definitely free
-        - 1.0: Definitely occupied
-        - 0.5: Unknown
+      - 0.0: Definitely free
+      - 1.0: Definitely occupied
+      - 0.5: Unknown
 
     The map is updated based on dead reckoning (position, heading) and sensor readings (distance).
     """

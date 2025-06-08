@@ -1,7 +1,8 @@
 # movement.py
 
 import time
-from config import config as c
+from adafruit_pca9685 import PCA9685
+import config as c
 
 class Motor:
     """

@@ -30,7 +30,7 @@ Constants:
 
 import RPi.GPIO as GPIO
 import time
-from config import config as c
+import config as c
 
 class Buzzer:
     def __init__(self, pin):

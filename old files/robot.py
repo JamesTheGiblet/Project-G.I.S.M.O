@@ -1,12 +1,18 @@
 # robot.py
 
 import time
-import board # type: ignore
-import busio # type: ignore
-import RPi.GPIO as GPIO # type: ignore
-from adafruit_pca9685 import PCA9685 # type: ignore
-from config import config as c
-from scr import dead_reckoning as dr
+import board
+import busio
+import RPi.GPIO as GPIO
+from adafruit_pca9685 import PCA9685
+import movement as m
+import config as c  # Import the config module
+import rgb_led as led
+import buzzer as b
+import touch_sensor as t
+import sound_sensor as s
+import servo_control as sc
+import dead_reckoning as dr
 
 """
 robot.py
@@ -20,11 +26,9 @@ Functions:
     - get_distance(): Measures the distance using the HC-SR04 ultrasonic sensor.
     - initialize_edge_sensors(): Initializes the edge sensor GPIO pins.
     - read_edge_sensors(): Reads the values of the left and right edge sensors.
-    - initialize_sensors(): Initializes all sensors including the ToF sensor.
-    - get_tof_distance(): Reads the distance from the VL53L0X ToF sensor.
     - initialize_dead_reckoning(): Initializes the dead reckoning system.
     - update_dead_reckoning(): Updates the dead reckoning with the latest sensor data.
-    - cleanup(pca, rgb_led_instance, tof_sensor_instance): Cleans up resources used by the robot.
+    - cleanup(pca, rgb_led_instance): Cleans up resources used by the robot.
 """
 
 # --- Initialization ---
@@ -40,9 +44,6 @@ pca.frequency = c.PCA_FREQUENCY
 
 # Initialize GPIO for Ultrasonic Sensor and Edge Sensors
 GPIO.setmode(GPIO.BCM)
-
-# Initialize ToF Sensor
-tof = None
 
 def initialize_pca():
     """Initializes the PCA9685 object."""
@@ -143,28 +144,9 @@ def update_dead_reckoning():
 
     dead_reckoning.update(accel_x, accel_y, gyro_z)
 
-def initialize_sensors():
-    """Initializes the sensors."""
-    global tof_sensor_instance  # Declare tof_sensor_instance as global
-
-    # Initialize VL53L0X ToF sensor
-    tof_sensor_instance = tof.initialize_tof_sensor()
-    if tof_sensor_instance:
-        print("VL53L0X ToF sensor initialized.")
-    else:
-        print("Failed to initialize VL53L0X ToF sensor.")
-        tof_sensor_instance = None
-
-    # Initialize edge sensors
-    initialize_edge_sensors()
-
-    print("Sensors initialized.")
-
 # --- Cleanup ---
-def cleanup(pca, rgb_led_instance, tof_sensor_instance=None):
+def cleanup(pca, rgb_led_instance):
     """Clean up resources."""
-    # No need to stop ranging explicitly with this library
-
     # Access the movement object created in main.py
     main_movement_object = globals().get('movement')
 

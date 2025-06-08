@@ -1,12 +1,7 @@
 # config.py
 
-import os 
-
 # --- System Configuration ---
 DEBUG_MODE = True  # Enable/disable debug messages
-
-# Define the project root directory for relative paths
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # --- Hardware ---
 # This section defines the hardware components connected to the robot and their pin/channel assignments.
@@ -92,16 +87,17 @@ SERVO_OPERATING_SPEED = 0.08  # Example value
 # --- Robot Movement Settings ---
 # Default values for robot movement.
 MOVEMENT_SETTINGS = {
-    "FORWARD_SPEED": 0.7,  # Increased from 0.5
-    "TURN_SPEED": 0.6,     # Increased from 0.5
+    "FORWARD_SPEED": 0.7,
+    "TURN_SPEED": 0.6,
     "RAMP_TIME": 0.5,
-    "MOVE_DURATION": 2.0, # Increased from 0.5
-    "TURN_DURATION": 0.3,  # Increased from 0.2
-    "OBSTACLE_DISTANCE": 20, # in cm, increased from 10
-    "STUCK_TIME": 5,  # Seconds before considered stuck
-    "STUCK_DISTANCE": 0.05, # Distance in meters to consider movement significant
-    "AVOIDANCE_ZONE_RADIUS": 0.2, # Radius around obstacle to avoid (in meters)
-    "OBSTACLE_MEMORY_TIME": 30, # Time to remember obstacle (in seconds)
+    "MOVE_DURATION": 2.0,
+    "TURN_DURATION": 0.3,
+    "OBSTACLE_DISTANCE": 20,  # in cm
+    "STUCK_TIME": 5,        # Seconds before considered stuck
+    "STUCK_DISTANCE": 0.05,   # Distance in meters to consider movement significant
+    "STUCK_THRESHOLD": 3,    # Number of times to get stuck before signaling failure
+    "AVOIDANCE_ZONE_RADIUS": 0.2,  # Radius around obstacle to avoid (in meters)
+    "OBSTACLE_MEMORY_TIME": 30,   # Time to remember obstacle (in seconds)
 }
 
 # --- RGB LED Colors ---

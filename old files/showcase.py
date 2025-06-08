@@ -1,4 +1,4 @@
-# main.py (Version 0.71: Self-Righting Logic and Enhanced Behaviors)
+#showcase.py
 
 import time
 import robot as rc
@@ -13,17 +13,13 @@ import dead_reckoning as dr
 import random
 import sys
 import select
-from utils.test_on_back import is_robot_on_back, is_robot_on_face, is_robot_upright, is_robot_on_lhs, is_robot_on_rhs, is_robot_upside_down
 
 # --- Code Functions ---
-# This program controls a robot named Gismo.
-# Version 0.71 adds basic self-righting logic using servo arms and enhances overall behavior.
-# The robot can move forward, backward, turn left, and turn right, with continuous movement capability.
-# It uses the PCA9685 PWM driver to control the L298N motor driver and the servos.
-# It uses the HC-SR04 sensor to measure distance to obstacles, and edge sensors to detect edges.
-# The robot also uses an RGB LED for visual feedback, a buzzer for audio feedback,
-# a touch sensor and a sound sensor for interaction,
-# and implements dead reckoning for position and heading estimation using the MPU6050 library.
+# This program is designed to showcase the capabilities of the Gismo robot.
+# It allows Gismo to wander autonomously, avoid obstacles and edges,
+# react to touch and sound, and execute specific actions based on user commands.
+# This script integrates various control modules for movement, sensors, feedback, and servos,
+# along with dead reckoning for position and heading estimation.
 
 # --- Helper Functions ---
 
@@ -93,35 +89,6 @@ def handle_command(command, pca, rgb_led_instance, movement, dead_reckoning):
     else:
         print("Invalid command.")
 
-def attempt_self_righting(pca, rgb_led_instance):
-    """
-    Attempts to self-right the robot using servo movements.
-
-    This is a placeholder function. You'll need to design specific movements
-    based on your robot's capabilities and how it typically falls.
-    """
-    print("Attempting to self-right...")
-
-    # Example sequence (you'll need to customize this):
-    sc.lower_arms(pca)  # Try to use arms to push
-    time.sleep(0.5)
-    sc.raise_arms(pca)
-    time.sleep(0.5)
-    sc.move_head_up(pca)
-    time.sleep(0.5)
-    sc.move_head_center(pca)
-    # Add more movements here as needed.
-
-    # After attempting, check if the robot is upright again
-    if is_robot_upright():
-        print("Self-righting successful!")
-        rgb_led_instance.set_emotion("happy")
-        b.buzzer.play_tone(500, 0.5)  # Success tone
-        return True
-    else:
-        print("Self-righting failed.")
-        return False
-
 # --- Main Program ---
 
 if __name__ == "__main__":
@@ -140,10 +107,7 @@ if __name__ == "__main__":
         rgb_led_instance.test()
 
         last_update = time.time()
-        last_position = dead_reckoning.get_position()
-        time_last_moved = time.time()
-        stuck_count = 0
-        obstacle_detected_at = None
+        last_turn = time.time()
 
         # Robot starts in wandering mode
         wandering = True
@@ -165,69 +129,14 @@ if __name__ == "__main__":
                     print(f"Position (X, Y): ({position[0]:.2f}, {position[1]:.2f}), Heading: {heading:.2f} degrees")
                     last_update = current_time
 
-                # --- Check for on-back, on-face, and upside-down conditions ---
-                if o.is_robot_on_back() or o.is_robot_on_face() or o.is_robot_upside_down():
-                    if o.is_robot_on_back():
-                        print("Robot is on its back!")
-                    elif o.is_robot_on_face():
-                        print("Robot is on its face!")
-                    elif o.is_robot_upside_down():
-                        print("Robot is upside down!")
-
-                    movement.stop_all_motors()
-                    
-                    # Attempt self-righting and check if it was successful
-                    if attempt_self_righting(rc.pca, rgb_led_instance):
-                        continue  # Go back to wandering mode
-
-                    # If self-righting fails or is not possible
-                    rgb_led_instance.set_emotion("sad")
-                    b.buzzer.play_tone(150, 1)  # Low tone
-                    # Add other actions here (e.g., signal for help)
-                    wandering = False  # Exit wandering mode
-                    print("Entering command mode due to being in an unsupported state.")
-                    continue  # Skip to the next iteration of the loop
-
-                # --- Stuck Detection ---
-                if movement.are_motors_commanded_to_move() and time.time() - time_last_moved > c.MOVEMENT_SETTINGS["STUCK_TIME"]:
-                    position = dead_reckoning.get_position()
-                    distance_moved = ((position[0] - last_position[0])**2 + (position[1] - last_position[1])**2)**0.5
-                    if distance_moved < c.MOVEMENT_SETTINGS["STUCK_DISTANCE"]:
-                        print("Stuck detected!")
-                        stuck_count += 1
-                        if stuck_count >= c.MOVEMENT_SETTINGS["STUCK_THRESHOLD"]:
-                            print("Stuck multiple times - signaling failure!")
-                            rgb_led_instance.set_emotion("sad")
-                            b.buzzer.play_tone(150, 1)
-                            stuck_count = 0
-                        else:
-                            # --- Stuck Recovery Maneuver ---
-                            movement.stop_all_motors()
-                            rgb_led_instance.set_emotion("confused")
-                            b.buzzer.play_tone(200, 0.2)
-                            movement.move_backward(speed=c.MOVEMENT_SETTINGS["FORWARD_SPEED"], duration=1.0)
-                            if random.choice([True, False]):
-                                movement.turn_left_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"] * 2)
-                            else:
-                                movement.turn_right_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"] * 2)
-                            time_last_moved = time.time()
-                    else:
-                        stuck_count = 0  # Reset counter if robot moved significantly
-                    last_position = position
-
                 # Check for sound
                 if sound_detected:
                     react_to_sound(rc.pca, rgb_led_instance)
-                    sound_detected = False
 
                 # Obstacle avoidance
                 if distance < c.MOVEMENT_SETTINGS["OBSTACLE_DISTANCE"]:
                     print("Obstacle detected!")
                     movement.stop_all_motors()
-
-                    # Record the position where the obstacle was detected
-                    obstacle_detected_at = (dead_reckoning.get_position(), time.time())
-
                     sc.raise_arms(rc.pca)
                     time.sleep(0.5)
                     sc.move_head_up(rc.pca)
@@ -248,37 +157,18 @@ if __name__ == "__main__":
                     movement.turn_right_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"])
                     rgb_led_instance.set_emotion("angry")
                     b.buzzer.play_edge_sound()
-                    movement.stop_all_motors()
 
                 elif right_edge == 1:
                     print("Right edge detected! Turning left...")
                     movement.turn_left_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"])
                     rgb_led_instance.set_emotion("angry")
                     b.buzzer.play_edge_sound()
-                    movement.stop_all_motors()
 
                 else:
-                    # Check if there's a remembered obstacle
-                    if obstacle_detected_at:
-                        obstacle_position, obstacle_time = obstacle_detected_at
-                        current_position = dead_reckoning.get_position()
-                        distance_to_obstacle = ((current_position[0] - obstacle_position[0]) ** 2 + (current_position[1] - obstacle_position[1]) ** 2) ** 0.5
-
-                        # Avoid the obstacle if within the avoidance zone and memory time hasn't expired
-                        if distance_to_obstacle < c.MOVEMENT_SETTINGS["AVOIDANCE_ZONE_RADIUS"] and (
-                                current_time - obstacle_time) < c.MOVEMENT_SETTINGS["OBSTACLE_MEMORY_TIME"]:
-                            print("Avoiding remembered obstacle...")
-                            # Implement your logic to turn away from the obstacle
-                            # For example, turn in the opposite direction of the obstacle
-                            movement.turn_right_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"])  # Adjust as needed
-                        else:
-                            obstacle_detected_at = None  # Clear the remembered obstacle
-
                     # Continue moving forward
                     movement.motor_right.set_speed(c.MOVEMENT_SETTINGS["FORWARD_SPEED"])
                     movement.motor_left.set_speed(c.MOVEMENT_SETTINGS["FORWARD_SPEED"])
                     rgb_led_instance.set_emotion("searching")
-                    time_last_moved = time.time()  # Update time of last movement
 
             # Check for user input without blocking
             if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:

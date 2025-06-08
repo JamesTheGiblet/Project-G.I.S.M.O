@@ -1,4 +1,6 @@
-# main.py (Version 0.70: Separated Stuck Detection into stuck_detection.py)
+#main.py
+
+# main.py
 
 import time
 import robot as rc
@@ -14,10 +16,12 @@ import random
 import sys
 import select
 import stuck_detection as sd
+import vl53l0x_sensor as tof
+import display
 
 # --- Code Functions ---
 # This program controls a robot named Gismo.
-# Version 0.70 separates stuck detection and recovery logic into a dedicated module.
+# Version 0.72 integrates dead reckoning, mapping, and a display module for enhanced functionality.
 # The robot can move forward, backward, turn left, and turn right, with a ramp-up/ramp-down
 # feature for smoother movements. It uses the PCA9685 PWM driver to control the L298N motor driver,
 # the HC-SR04 sensor to measure distance to obstacles, and edge sensors to detect edges.
@@ -59,16 +63,22 @@ def handle_command(command, pca, rgb_led_instance, movement, dead_reckoning):
         wiggle(pca, rgb_led_instance)
     elif command == "happy":
         rgb_led_instance.set_emotion("happy")
+        display.draw_face_happy() 
     elif command == "sad":
         rgb_led_instance.set_emotion("sad")
+        display.draw_face_sad()
     elif command == "angry":
         rgb_led_instance.set_emotion("angry")
+        display.draw_face_angry()
     elif command == "surprised":
         rgb_led_instance.set_emotion("surprised")
+        display.draw_face_surprised()
     elif command == "searching":
         rgb_led_instance.set_emotion("searching")
+        display.draw_face_searching()
     elif command == "neutral":
         rgb_led_instance.set_emotion("neutral")
+        display.draw_face_neutral()
     elif command == "arms up":
         sc.raise_arms(pca)
     elif command == "arms down":
@@ -85,6 +95,7 @@ def handle_command(command, pca, rgb_led_instance, movement, dead_reckoning):
         position = dead_reckoning.get_position()
         heading = dead_reckoning.get_heading()
         print(f"Position (X, Y): ({position[0]:.2f}, {position[1]:.2f}), Heading: {heading:.2f} degrees")
+        display.draw_text(f"Pos: ({position[0]:.2f}, {position[1]:.2f}), Hdg: {heading:.2f}")
     elif command == "help":
         print("Available commands: forward, backward, left, right, stop, wiggle, happy, sad, angry, surprised, searching, neutral, arms up, arms down, head up, head down, head center, play tune, get position, help, exit, start, stop")
     elif command == "exit":
@@ -95,6 +106,7 @@ def handle_command(command, pca, rgb_led_instance, movement, dead_reckoning):
 # --- Main Program ---
 
 if __name__ == "__main__":
+    global tof_sensor_instance  # Declare it as global
     try:
         rc.initialize_pca()
         rc.initialize_edge_sensors()
@@ -105,9 +117,12 @@ if __name__ == "__main__":
         rgb_led_instance = led.RGBLed(rc.pca)
         movement = m.Movement(rc.pca)
         dead_reckoning = dr.DeadReckoning()
+        tof_sensor_instance = tof.initialize_tof_sensor()  # Initialize ToF sensor
+        display.initialize_display()  # Initialize the display
         b.buzzer.play_startup_sound()
         sc.test_servos(rc.pca)
         rgb_led_instance.test()
+        display.test_display()  # Run display test
 
         last_update = time.time()
         last_position = dead_reckoning.get_position()
@@ -124,7 +139,7 @@ if __name__ == "__main__":
                 dead_reckoning.update()
                 current_time = time.time()
 
-                distance = rc.get_distance()
+                distance = rc.get_tof_distance()
                 left_edge, right_edge = rc.read_edge_sensors()
                 sound_detected = s.is_sound_detected()
 
@@ -133,6 +148,7 @@ if __name__ == "__main__":
                     position = dead_reckoning.get_position()
                     heading = dead_reckoning.get_heading()
                     print(f"Position (X, Y): ({position[0]:.2f}, {position[1]:.2f}), Heading: {heading:.2f} degrees")
+                    display.draw_text(f"Pos: ({position[0]:.2f}, {position[1]:.2f}), Hdg: {heading:.2f}") 
                     last_update = current_time
 
                 # Handle stuck situation using the separate module
@@ -141,6 +157,7 @@ if __name__ == "__main__":
                     wandering = False  # Exit wandering mode if stuck for too long
                     movement.stop_all_motors()
                     rgb_led_instance.set_emotion("neutral")
+                    display.draw_face_sad()  # Show sad face on display
                     print("Robot got stuck. Entering command mode.")
                     continue
 
@@ -149,8 +166,8 @@ if __name__ == "__main__":
                     react_to_sound(rc.pca, rgb_led_instance)
                     sound_detected = False
 
-                # Obstacle avoidance
-                if distance < c.MOVEMENT_SETTINGS["OBSTACLE_DISTANCE"]:
+# Obstacle avoidance
+                if distance is not None and distance < c.MOVEMENT_SETTINGS["OBSTACLE_DISTANCE"]:
                     print("Obstacle detected!")
                     movement.stop_all_motors()
 
@@ -161,10 +178,11 @@ if __name__ == "__main__":
                     time.sleep(0.5)
                     sc.move_head_up(rc.pca)
                     rgb_led_instance.set_emotion("surprised")
+                    display.draw_face_surprised()  # Show surprised face on display
                     b.buzzer.play_obstacle_sound()
                     time.sleep(0.5)
-                    sc.move_head_center(rc.pca)
-                    sc.lower_arms(rc.pca)
+                    sc.move_head_center(rc.pca)  # Move head back to center
+
                     # Turn to a random direction after encountering an obstacle
                     if random.choice([True, False]):
                         movement.turn_left_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"])
@@ -176,6 +194,7 @@ if __name__ == "__main__":
                     print("Left edge detected! Turning right...")
                     movement.turn_right_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"])
                     rgb_led_instance.set_emotion("angry")
+                    display.draw_face_angry()  # Show angry face on display
                     b.buzzer.play_edge_sound()
                     movement.stop_all_motors()
 
@@ -183,53 +202,57 @@ if __name__ == "__main__":
                     print("Right edge detected! Turning left...")
                     movement.turn_left_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"])
                     rgb_led_instance.set_emotion("angry")
+                    display.draw_face_angry()  # Show angry face on display
                     b.buzzer.play_edge_sound()
                     movement.stop_all_motors()
 
+                # Check if there's a remembered obstacle
+                elif obstacle_detected_at:
+                    obstacle_position, obstacle_time = obstacle_detected_at
+                    current_position = dead_reckoning.get_position()
+                    distance_to_obstacle = ((current_position[0] - obstacle_position[0]) ** 2 + (current_position[1] - obstacle_position[1]) ** 2) ** 0.5
+
+                    # Avoid the obstacle if within the avoidance zone and memory time hasn't expired
+                    if distance_to_obstacle < c.MOVEMENT_SETTINGS["AVOIDANCE_ZONE_RADIUS"] and (
+                            current_time - obstacle_time) < c.MOVEMENT_SETTINGS["OBSTACLE_MEMORY_TIME"]:
+                        print("Avoiding remembered obstacle...")
+                        # Implement your logic to turn away from the obstacle
+                        # For example, turn in the opposite direction of the obstacle
+                        movement.turn_right_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"])  # Adjust as needed
+                    else:
+                        obstacle_detected_at = None  # Clear the remembered obstacle
+
                 else:
-                    # Check if there's a remembered obstacle
-                    if obstacle_detected_at:
-                        obstacle_position, obstacle_time = obstacle_detected_at
-                        current_position = dead_reckoning.get_position()
-                        distance_to_obstacle = ((current_position[0] - obstacle_position[0]) ** 2 + (current_position[1] - obstacle_position[1]) ** 2) ** 0.5
-
-                        # Avoid the obstacle if within the avoidance zone and memory time hasn't expired
-                        if distance_to_obstacle < c.MOVEMENT_SETTINGS["AVOIDANCE_ZONE_RADIUS"] and (
-                                current_time - obstacle_time) < c.MOVEMENT_SETTINGS["OBSTACLE_MEMORY_TIME"]:
-                            print("Avoiding remembered obstacle...")
-                            # Implement your logic to turn away from the obstacle
-                            # For example, turn in the opposite direction of the obstacle
-                            movement.turn_right_in_place(duration=c.MOVEMENT_SETTINGS["TURN_DURATION"])  # Adjust as needed
-                        else:
-                            obstacle_detected_at = None  # Clear the remembered obstacle
-
                     # Continue moving forward
                     movement.motor_right.set_speed(c.MOVEMENT_SETTINGS["FORWARD_SPEED"])
                     movement.motor_left.set_speed(c.MOVEMENT_SETTINGS["FORWARD_SPEED"])
                     rgb_led_instance.set_emotion("searching")
+                    display.draw_face_searching()  # Show searching face on display
                     time_last_moved = time.time()  # Update time of last movement
 
-            # Check for user input without blocking
-            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-                command = sys.stdin.readline().strip()
-                if command == 'exit':
-                    raise KeyboardInterrupt
-                elif command == 'stop':
-                    wandering = False
-                    movement.stop_all_motors()
-                    rgb_led_instance.set_emotion("neutral")
-                    print("Entering command mode. Type 'start' to resume wandering.")
-                elif command == 'start':
-                    wandering = True
-                    rgb_led_instance.set_emotion("searching")
-                    print("Resuming wandering...")
-                else:
-                    if not wandering:
-                        handle_command(command, rc.pca, rgb_led_instance, movement, dead_reckoning)
+                # Check for user input without blocking
+                if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                    command = sys.stdin.readline().strip()
+                    if command == 'exit':
+                        raise KeyboardInterrupt
+                    elif command == 'stop':
+                        wandering = False
+                        movement.stop_all_motors()
+                        rgb_led_instance.set_emotion("neutral")
+                        display.draw_face_neutral()  # Show neutral face on display
+                        print("Entering command mode. Type 'start' to resume wandering.")
+                    elif command == 'start':
+                        wandering = True
+                        rgb_led_instance.set_emotion("searching")
+                        display.draw_face_searching()  # Show searching face on display
+                        print("Resuming wandering...")
                     else:
-                        print("Command ignored in wandering mode. Type 'stop' to enter command mode.")
+                        if not wandering:
+                            handle_command(command, rc.pca, rgb_led_instance, movement, dead_reckoning)
+                        else:
+                            print("Command ignored in wandering mode. Type 'stop' to enter command mode.")
 
-            time.sleep(0.1)  # Adjust timing as needed
+                time.sleep(0.1)  # Adjust timing as needed
 
     except KeyboardInterrupt:
         print("Stopping motors and exiting...")
@@ -238,4 +261,4 @@ if __name__ == "__main__":
         b.buzzer.play_shutdown_sound()
 
     finally:
-        rc.cleanup(rc.pca, rgb_led_instance)
+        rc.cleanup(rc.pca, rgb_led_instance, tof_sensor_instance)  # Pass tof_sensor_instance to cleanup
