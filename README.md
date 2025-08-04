@@ -1,122 +1,85 @@
-# Gismo the Robot
+### **Praximous Codex: Project G.I.S.M.O.**
 
-Gismo is a feature-packed robot built on a Raspberry Pi. It combines a variety of sensors, motors, and interactive components to create a responsive and engaging robotic experience.
+Project G.I.S.M.O. (Generative, Integrated, Self-Monitoring Operations) is a mobile robotics platform and an embodiment of the Praximous brand's philosophy. This project serves as an introduction to autonomous navigation, sensor integration, and a modular approach to robotics. This repository contains the essential blueprints and core code to begin your journey into a world of self-guided machines.
 
-Building G.I.S.M.O has been an incredible experience, one that reflects my approach to problem-solving: dive in, experiment, adapt, and refine. It’s messy, exciting, and immensely rewarding—a true labor of love.
+-----
 
-* **Motor Control:**  Gismo can move forward, backward, and turn using two DC motors.
-* **Neck Servo:** A servo motor allows Gismo to turn its "head" and scan its surroundings.
-* **Obstacle Avoidance:**  Gismo uses an ultrasonic sensor to detect objects in its path and avoid collisions.
-* **Edge Detection:**  Edge sensors prevent Gismo from falling off surfaces.
-* **Buzzer Feedback:**  A buzzer plays melodies to indicate different events, such as object detection or edge detection.
-* **RGB LED Feedback:**  An RGB LED provides visual cues, changing color based on Gismo's actions.
-* **Touch Sensor Interaction:**  Gismo reacts to touch with a shaking motion.
-* **IR Distance Sensor:**  An infrared distance sensor helps Gismo avoid obstacles while reversing.
-* **Button Control:**  A button triggers debugging actions and sensor tests.
-* **Camera Functionality:**  Gismo can take pictures when it detects an object.
-* **IR Remote Control:**  Control Gismo's movements with an infrared remote.
-* **Sound Sensor:** Gismo can react to sounds in its environment.
-* **OLED Display:**  A small OLED screen displays a "face" that changes expression based on Gismo's status (happy or sad).
-* **IMU (Inertial Measurement Unit):** An IMU (MPU9250) provides acceleration, gyroscope, and magnetometer data for advanced navigation and orientation sensing.
+### **Disclaimer**
 
-## **Technical Architecture**
+This project is a creative and educational endeavor designed for hobbyist use. The information, plans, and code are provided as-is, with no guarantee of fitness for any particular purpose. Users are responsible for their own safety and for complying with all local laws and regulations regarding the assembly and operation of robotics. By following this codex, you acknowledge that you are building this artifact at your own risk.
 
-![Diagram Placeholder](path-to-diagram-image)
+-----
 
-The robot’s design integrates key hardware components like the Raspberry Pi, sensors, motor controllers, and a power management unit. The software uses a layered architecture for easier debugging and future enhancements.
+## **Table of Contents**
 
-### GPIO and Component Assignments
+  * [Project Ethos: The Autonomous Wanderer](https://www.google.com/search?q=%23project-ethos)
+  * [What You'll Need](https://www.google.com/search?q=%23what-youll-need)
+  * [Explore the Core Blueprint](https://www.google.com/search?q=%23core-blueprint)
+  * [A Glimpse into the Build Ritual](https://www.google.com/search?q=%23glimpse-of-ritual)
+  * [Embark on the Full Ritual](https://www.google.com/search?q=%23full-ritual)
+  * [Contribute to the Codex](https://www.google.com/search?q=%23contribute)
 
-| Component                      | Wire/Signal | Colour   | Connection/Pin             | Power Source    |
-|---------------------------------|-------------|----------|----------------------------|-----------------|
-| **Raspberry Pi Zero 2W**        | power       | red/black| PCA9685 0                  | PCA2            |
-| **SSD1306 Display**             | SDA         | White    | PCA9685 SDA                | PCA out         |
-|                                 | SCL         | Blue     | PCA9685 SCL                | PCA out         |
-| **PCA9685 PWM Driver**          | SDA         | Yellow   | Pi GPIO 2                  | battery         |
-|                                 | SCL         | Blue     | Pi GPIO 3                  | battery         |
-| **MPU9250 IMU**                 | SDA         | White    | PCA9685 SDA                | PCA15           |
-|                                 | SCL         | Blue     | PCA9685 SCL                | -               |
-| **Pi Camera Rev 1.3**           | -           | -        | CSI port                   | -               |
-| **9G Servo (left)**             | -           | -        | PCA9685 Channel 0          | PCA0            |
-| **9G Servo (right)**            | -           | -        | PCA9685 Channel 1          | PCA1            |
-| **9G Servo (head)**             | -           | -        | PCA9685 Channel 14         | PCA14           |
-| **KY-016 RGB LED (Red)**        | Red         | Red      | PCA9685 Channel 13         | PCA13           |
-| **KY-016 RGB LED (Green)**      | Green       | Green    | PCA9685 Channel 12         | -               |
-| **KY-016 RGB LED (Blue)**       | Blue        | Blue     | PCA9685 Channel 11         | PCA10           |
-| **L298N Motor Driver (power)**  | -           | -        | -                          | PCA11           |
-| **L298N Motor Driver Int1**     | Int1        | Blue     | PCA9685 Channel 7          | PCA11           |
-| **L298N Motor Driver Int2**     | Int2        | Green    | PCA9685 Channel 8          | PCA9            |
-| **L298N Motor Driver Int3**     | Int3        | White    | PCA9685 Channel 10         | PCA8            |
-| **L298N Motor Driver Int4**     | Int4        | Yellow   | PCA9685 Channel 9          | PCA7            |
-| **KY-033 Edge Sensor (right)**  | Signal      | Green    | Pi GPIO 12                 | PCA5            |
-| **KY-033 Edge Sensor (left)**   | Signal      | Green    | Pi GPIO 13                 | PCA4            |
-| **CHQ1838 IR Receiver**         | Signal      | Green    | Pi GPIO 16                 | PCA12           |
-| **TTP223B Touch Sensor**        | Signal      | Green    | Pi GPIO 17                 | PCA8            |
-| **KY-006 Passive Buzzer**       | Signal      | White    | Pi GPIO 18                 | PCA6            |
-| **TS-YM-115 Sound Sensor**      | Signal      | White    | Pi GPIO 21                 | PCA9            |
-| **HCSR04 Ultrasonic Echo**      | Echo        | Green    | Pi GPIO 22                 | PCA7            |
-| **HCSR04 Ultrasonic Trigger**   | Trigger     | Blue     | Pi GPIO 23                 | -               |
-| **TP-4056 USB Charger**         | -           | -        | LiPo 3.7V                  | PCA3            |
-| **Switch 999330**               | -           | -        | LiPo 3.7V                  | -               |
-| **LiPo 3.7V 1100mAh 903042**    | -           | -        | TP-4056 USB Charger        | -               |
+-----
 
-This table summarizes the main components, their wiring, GPIO assignments, and power sources for Gismo.
+### \<a name="project-ethos"\>\</a\> Project Ethos: The Autonomous Wanderer
 
-* Raspberry Pi (any model with 40 GPIO pins should work)
-* Breadboard
-* Jumper wires
-* 2x DC Motors with motor driver
-* Servo Motor
-* Grove Ultrasonic Sensor
-* 2x Edge Detection Sensors
-* Buzzer
-* Touch Sensor
-* KY-032 IR Distance Sensor
-* Button
-* Camera Module (compatible with Raspberry Pi)
-* IR Receiver
-* RGB LED
-* PCA9685 PWM Driver
-* OLED Display (SSD1306)
-* MPU9250 IMU Sensor
-* KY-020 Tilt Sensor
-* TS-YM-115 Sound Sensor
+G.I.S.M.O. is the archetype of the **Autonomous Wanderer**. Its purpose is to navigate and perceive its environment, learning from its surroundings and making its own decisions. This project is a testament to the power of modular code design and the potential of a mobile platform to become self-aware through a network of sensors.
 
-## Software Requirements
+-----
 
-* Raspberry Pi OS
-* Python 3
-* RPi.GPIO library
-* PIL library
-* adafruit_ssd1306 library
-* adafruit_pca9685 library
-* evdev library
-* mpu9250_jmdev library
-* libcamera-still (for camera functionality)
+### \<a name="what-youll-need"\>\</a\> What You'll Need
 
-## **Future Enhancements**  
-- Integration of advanced sensors (e.g., LIDAR or ToF).  
-- Machine learning for object recognition and decision-making.  
-- Enhanced navigation algorithms for complex environments.  
+This project is intended for builders with an intermediate skill level in electronics and programming. To complete the core build, you will need to acquire the following:
 
-1. **Clone the repository:** `git clone https://github.com/your-username/gismo-robot.git`
-2. **Install the required libraries:** `pip install -r requirements.txt`
-3. **Connect the hardware components** according to the wiring diagram (include a diagram in your repository).
-4. **Configure the IR receiver:** Find the correct eventX path for your IR receiver using `ls /dev/input/` and update the `device_path` variable in the code.
-5. **Run the code:** `python gismo_v1.13.py`
+  * **Parts List**: The definitive list of all components and wiring can be found in the `pi zero 2w Components and GPIO Assignments.txt` and `wiring_colours.txt` files.
+  * **Essential Tools**:
+      * Raspberry Pi (Zero 2W or similar)
+      * Soldering Iron & Solder
+      * Breadboard and Jumper Wires
+      * L298N Motor Driver
+      * HC-SR04 Ultrasonic Sensor
+      * 2 Edge Detection Sensors
+  * **Skill Level**: This project is suitable for intermediate builders with a basic understanding of Python, Linux (Raspberry Pi OS), and electronics.
+  * **Core Code**: The basic test scripts and foundational modules are provided in this repository.
 
-## Usage
+-----
 
-* Use the IR remote to control Gismo's movements.
-* Press the button to run sensor tests.
-* Gismo will automatically avoid obstacles and edges.
-* Observe the RGB LED and OLED display for visual feedback.
-* Listen to the buzzer for audio cues.
+### \<a name="core-blueprint"\>\</a\> Explore the Core Blueprint
 
-## Contributing
+This repository contains the foundational code and documentation needed to build G.I.S.M.O. and execute its most basic rituals. The files here will help you understand motor control, sensor functionality, and initial setup.
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+  * **`config/config.py`**: A central configuration file that defines pin assignments and hardware parameters.
+  * **`tests/`**: Contains simple test scripts for individual components like the buzzer, motors, and sensors.
+  * **`lib/`**: Includes foundational library files and reference images, such as the Raspberry Pi Zero 2W pinout.
 
-## License
+-----
 
-This project is licensed under the [MIT License](LICENSE).
+### \<a name="glimpse-of-ritual"\>\</a\> A Glimpse into the Build Ritual
+
+The true journey of G.I.S.M.O. involves moving from basic functionality to true autonomy. This process is documented in a series of rituals designed to grant the robot advanced capabilities.
+
+  * **Basic Movement Ritual**: Calibrate the motors and servos to perform fundamental movements and arm gestures.
+  * **Sensor Awakening Ritual**: Test and integrate a variety of sensors, including ultrasonic, sound, and touch sensors, to allow G.I.S.M.O. to perceive its immediate environment.
+  * **Wandering Ritual**: Combine sensor data with basic logic to allow G.I.S.M.O. to wander autonomously while avoiding obstacles and edges.
+
+-----
+
+### \<a name="full-ritual"\>\</a\> Embark on the Full Ritual
+
+To unlock G.I.S.M.O.'s full potential as an Autonomous Wanderer, you need the complete Praximous Codex. The premium roadmap contains:
+
+  * **Advanced Navigation Algorithms**: Detailed guides on implementing dead reckoning, occupancy grid mapping, and self-righting logic.
+  * **Comprehensive Documentation**: In-depth tutorials, code examples, and full schematics for every subsystem.
+  * **The Full Lore**: The complete story behind G.I.S.M.O.'s archetype and its place in the Praximous universe.
+
+**To access the full, premium Praximous Codex Roadmap, visit our official portal:**
+
+> **[jamesthegiblet.co.uk](https://jamesthegiblet.co.uk)**
+
+-----
+
+### \<a name="contribute"\>\</a\> Contribute to the Codex
+
+We welcome fellow creators to join the Praximous community. If you have built your own G.I.S.M.O. or developed a new "enchantment" for the artifact, we invite you to open a pull request. Contributions are governed by the `contributor.protocol` outlined in our full roadmap.
+
+*By building a Praximous artifact, you are not just a user—you are a contributor to a greater legacy.*
