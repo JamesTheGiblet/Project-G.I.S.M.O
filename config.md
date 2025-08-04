@@ -1,13 +1,13 @@
 # Gismo Robot Configuration File
 
 This document centralizes all hardware-related configurations for the Gismo robot, including GPIO pin assignments, PWM channels, and wiring color conventions.
+Table of Contents
 
-## Table of Contents
+    Wiring Colour Conventions
 
-- [Wiring Colour Conventions](#wiring-colour-conventions)
-- [Component and GPIO Assignments](#component-and-gpio-assignments)
+    Component and GPIO Assignments
 
-## Wiring Colour Conventions
+<a name="wiring-colours"></a> Wiring Colour Conventions
 
 These conventions provide a standardized "glyph system" for wiring, ensuring consistency and clarity during the build.
 
@@ -31,7 +31,7 @@ These conventions provide a standardized "glyph system" for wiring, ensuring con
 
     IR Receiver, Reverse Sensor, Edge Sensors: Gray (signal)
 
-## Component and GPIO Assignments
+<a name="gpio-assignments"></a> Component and GPIO Assignments
 
 This section maps each component to its pin assignments and power source. For components connected to the PCA9685, the Connection refers to the PWM channel number.
 Pi Zero 2W
