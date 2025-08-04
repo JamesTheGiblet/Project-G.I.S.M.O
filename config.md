@@ -7,7 +7,7 @@ Table of Contents
 
     Component and GPIO Assignments
 
-<a name="wiring-colours"></a> Wiring Colour Conventions
+## Wiring Colour Conventions
 
 These conventions provide a standardized "glyph system" for wiring, ensuring consistency and clarity during the build.
 
@@ -31,7 +31,7 @@ These conventions provide a standardized "glyph system" for wiring, ensuring con
 
     IR Receiver, Reverse Sensor, Edge Sensors: Gray (signal)
 
-<a name="gpio-assignments"></a> Component and GPIO Assignments
+## Component and GPIO Assignments
 
 This section maps each component to its pin assignments and power source. For components connected to the PCA9685, the Connection refers to the PWM channel number.
 Pi Zero 2W
