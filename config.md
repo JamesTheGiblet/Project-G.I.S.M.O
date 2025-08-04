@@ -1,4 +1,4 @@
-# Gismo Robot Configuration File
+Gismo Robot Configuration File
 
 This document centralizes all hardware-related configurations for the Gismo robot, including GPIO pin assignments, PWM channels, and wiring color conventions.
 Table of Contents
@@ -7,7 +7,9 @@ Table of Contents
 
     Component and GPIO Assignments
 
-## Wiring Colour Conventions
+    Software Requirements
+
+<a name="wiring-colours"></a> Wiring Colour Conventions
 
 These conventions provide a standardized "glyph system" for wiring, ensuring consistency and clarity during the build.
 
@@ -31,7 +33,7 @@ These conventions provide a standardized "glyph system" for wiring, ensuring con
 
     IR Receiver, Reverse Sensor, Edge Sensors: Gray (signal)
 
-## Component and GPIO Assignments
+<a name="gpio-assignments"></a> Component and GPIO Assignments
 
 This section maps each component to its pin assignments and power source. For components connected to the PCA9685, the Connection refers to the PWM channel number.
 Pi Zero 2W
@@ -137,3 +139,10 @@ Switch 999330
 LiPo 3.7V 1100mAh 903042
 
     Connection: Connects to the TP-4056 USB Charger, Power Source: N/A
+
+<a name="software-requirements"></a> Software Requirements
+
+This project relies on the following Python libraries. The definitive list of dependencies is available in the requirements.txt file within this repository.
+
+To install all required libraries on your Raspberry Pi, run the following command in your terminal:
+pip install -r requirements.txt
