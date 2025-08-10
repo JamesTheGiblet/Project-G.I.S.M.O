@@ -1,85 +1,82 @@
-# Praximous Codex: Project G.I.S.M.O
+## **Project: G.I.S.M.O.**
 
-Project G.I.S.M.O. (Generative, Integrated, Self-Monitoring Operations) is a mobile robotics platform and an embodiment of the Praximous brand's philosophy. This project serves as an introduction to autonomous navigation, sensor integration, and a modular approach to robotics. This repository contains the essential blueprints and core code to begin your journey into a world of self-guided machines.
-
------
-
-## **Disclaimer**
-
-This project is a creative and educational endeavor designed for hobbyist use. The information, plans, and code are provided as-is, with no guarantee of fitness for any particular purpose. Users are responsible for their own safety and for complying with all local laws and regulations regarding the assembly and operation of robotics. By following this codex, you acknowledge that you are building this artifact at your own risk.
+A Build Guide for an Autonomous Robot
 
 -----
 
-## **Table of Contents**
+#### **Disclaimer: Read This First**
 
-* [Project Ethos: The Autonomous Wanderer](https://www.google.com/search?q=%23project-ethos)
-* [What You'll Need](https://www.google.com/search?q=%23what-youll-need)
-* [Explore the Core Blueprint](https://www.google.com/search?q=%23core-blueprint)
-* [A Glimpse into the Build Ritual](https://www.google.com/search?q=%23glimpse-of-ritual)
-* [Embark on the Full Ritual](https://www.google.com/search?q=%23full-ritual)
-* [Contribute to the Codex](https://www.google.com/search?q=%23contribute)
+This is a hobby project for learning and experimentation. You are building a moving machine with electronics and batteries. If you wire something wrong, you could fry a component or worse.
+
+**This guide is provided as-is.** I'm not responsible for any damage to your hardware, your house, or yourself. By building this, you agree that you're doing it at your own risk. Be smart, be safe, and double-check your wiring.
 
 -----
 
-### \<a name="project-ethos"\>\</a\> Project Ethos: The Autonomous Wanderer
+#### **Table of Contents**
 
-G.I.S.M.O. is the archetype of the **Autonomous Wanderer**. Its purpose is to navigate and perceive its environment, learning from its surroundings and making its own decisions. This project is a testament to the power of modular code design and the potential of a mobile platform to become self-aware through a network of sensors.
-
------
-
-### \<a name="what-youll-need"\>\</a\> What You'll Need
-
-This project is intended for builders with an intermediate skill level in electronics and programming. To complete the core build, you will need to acquire the following:
-
-* **Parts List**: The definitive list of all components and wiring can be found in the `pi zero 2w Components and GPIO Assignments.txt` and `wiring_colours.txt` files.
-* **Essential Tools**:
-  * Raspberry Pi (Zero 2W or similar)
-  * Soldering Iron & Solder
-  * Breadboard and Jumper Wires
-  * L298N Motor Driver
-  * HC-SR04 Ultrasonic Sensor
-  * 2 Edge Detection Sensors
-* **Skill Level**: This project is suitable for intermediate builders with a basic understanding of Python, Linux (Raspberry Pi OS), and electronics.
-* **Core Code**: The basic test scripts and foundational modules are provided in this repository.
+  * [The Big Idea](https://www.google.com/search?q=%23the-big-idea)
+  * [What You'll Need](https://www.google.com/search?q=%23what-youll-need)
+  * [What's in this Repo](https://www.google.com/search?q=%23whats-in-this-repo)
+  * [The First Steps](https://www.google.com/search?q=%23the-first-steps)
+  * [Want to Go Further? (The Premium Roadmap)](https://www.google.com/search?q=%23want-to-go-further-the-premium-roadmap)
+  * [How to Contribute](https://www.google.com/search?q=%23how-to-contribute)
 
 -----
 
-### \<a name="core-blueprint"\>\</a\> Explore the Core Blueprint
+### **The Big Idea**
 
-This repository contains the foundational code and documentation needed to build G.I.S.M.O. and execute its most basic rituals. The files here will help you understand motor control, sensor functionality, and initial setup.
-
-* **`config/config.py`**: A central configuration file that defines pin assignments and hardware parameters.
-* **`tests/`**: Contains simple test scripts for individual components like the buzzer, motors, and sensors.
-* **`lib/`**: Includes foundational library files and reference images, such as the Raspberry Pi Zero 2W pinout.
+The goal of G.I.S.M.O. is to build a simple, two-wheeled robot that can wander around on its own without bumping into things or falling off a table. It's the classic "autonomous wanderer"—a foundational project for anyone who wants to get serious about robotics. It's the physical embodiment of the "build first" philosophy.
 
 -----
 
-### \<a name="glimpse-of-ritual"\>\</a\> A Glimpse into the Build Ritual
+### **What You'll Need**
 
-The true journey of G.I.S.M.O. involves moving from basic functionality to true autonomy. This process is documented in a series of rituals designed to grant the robot advanced capabilities.
+This is an intermediate-level project. You should be comfortable with basic Python scripting, using the command line on a Raspberry Pi, and soldering.
 
-* **Basic Movement Ritual**: Calibrate the motors and servos to perform fundamental movements and arm gestures.
-* **Sensor Awakening Ritual**: Test and integrate a variety of sensors, including ultrasonic, sound, and touch sensors, to allow G.I.S.M.O. to perceive its immediate environment.
-* **Wandering Ritual**: Combine sensor data with basic logic to allow G.I.S.M.O. to wander autonomously while avoiding obstacles and edges.
+  * **Parts List:** You can find the complete list of components in the `pi zero 2w Components and GPIO Assignments.txt` file. The key parts are a Raspberry Pi Zero 2W, an L298N Motor Driver, an HC-SR04 ultrasonic sensor, and a couple of edge detection sensors.
+  * **Tools:** You'll need a soldering iron, solder, breadboard, jumper wires, and basic hand tools.
+  * **Code:** This repository contains the basic Python test scripts to get you started.
 
 -----
 
-### \<a name="full-ritual"\>\</a\> Embark on the Full Ritual
+### **What's in this Repo**
 
-To unlock G.I.S.M.O.'s full potential as an Autonomous Wanderer, you need the complete Praximous Codex. The premium roadmap contains:
+This repo is the **starter kit**. It gives you the foundational code and documentation to get your robot assembled and verify that each component works.
 
-* **Advanced Navigation Algorithms**: Detailed guides on implementing dead reckoning, occupancy grid mapping, and self-righting logic.
-* **Comprehensive Documentation**: In-depth tutorials, code examples, and full schematics for every subsystem.
-* **The Full Lore**: The complete story behind G.I.S.M.O.'s archetype and its place in the Praximous universe.
+  * `config/config.py`: A central place to define your GPIO pin assignments.
+  * `tests/`: A folder full of simple scripts to test individual parts like the motors, sensors, and buzzer. Run these first to make sure your wiring is correct.
+  * `lib/`: Reference files, like the Raspberry Pi pinout diagram.
 
-**To access the full, premium Praximous Codex Roadmap, visit our official portal:**
+-----
+
+### **The First Steps**
+
+Getting a robot to "live" is a step-by-step process.
+
+1.  **Make It Move:** The first goal is to get the motors calibrated and responding to commands. This involves testing the motor driver and writing a simple script to make the wheels turn.
+2.  **Make It See:** Next, you'll wire up the sensors (ultrasonic for obstacles, IR sensors for edge detection) and run the test scripts to make sure it can perceive the world around it.
+3.  **Make It Wander:** This is where it comes together. You'll combine the movement logic with the sensor data to create a simple "if-then" loop: "If you see a wall, turn. If you see an edge, back up." This is the core of the autonomous wanderer.
+
+-----
+
+### **Want to Go Further? (The Premium Roadmap)**
+
+The free code in this repository gets you a basic wandering robot. It's a great start, but it's just the beginning.
+
+If you want to unlock G.I.S.M.O.'s full potential and learn advanced robotics concepts, I've created a complete premium roadmap. It includes:
+
+  * **Advanced Navigation Algorithms:** Step-by-step guides on how to implement dead reckoning and build occupancy grid maps.
+  * **Complete Schematics & Code:** The full, commented source code and detailed wiring diagrams for every subsystem.
+  * **In-Depth Tutorials:** Deep dives into how each component works and how to troubleshoot common problems.
+
+**To get the full premium roadmap, visit my site:**
 
 > **[jamesthegiblet.co.uk](https://jamesthegiblet.co.uk)**
 
 -----
 
-### \<a name="contribute"\>\</a\> Contribute to the Codex
+### **How to Contribute**
 
-We welcome fellow creators to join the Praximous community. If you have built your own G.I.S.M.O. or developed a new "enchantment" for the artifact, we invite you to open a pull request. Contributions are governed by the `contributor.protocol` outlined in our full roadmap.
+If you've built your own G.I.S.M.O. and added a cool new feature or improvement, I'd love to see it. Open a pull request with a clear description of what you've changed.
 
-*By building a Praximous artifact, you are not just a user—you are a contributor to a greater legacy.*
+This is where software meets the real world. **The build is the proof.** Let's make something that moves.
