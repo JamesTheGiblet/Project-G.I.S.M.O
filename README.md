@@ -2,8 +2,6 @@
 
 A Build Guide for an Autonomous Robot
 
------
-
 #### **Disclaimer: Read This First**
 
 This is a hobby project for learning and experimentation. You are building a moving machine with electronics and batteries. If you wire something wrong, you could fry a component or worse.
